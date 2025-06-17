@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contrato de Arriendo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #eef2f3, #8e9eab);
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+    }
+    label, textarea, input {
+      display: block;
+      width: 100%;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    textarea {
+      height: 80px;
+    }
+    button {
+      padding: 10px;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 18px;
+    }
+    #vistaPreviaContainer {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contrato de Arriendo</h1>
+  <form id="formulario">
+    <label>Ciudad: <input type="text" id="ciudad" value="Los Ángeles"></label>
+    <label>Fecha: <input type="text" id="fecha" value="17 de junio de 2025"></label>
+    <label>Arrendador: <input type="text" id="arrendador" value="Dueño o representante del inmueble"></label>
+    <label>Nacionalidad Arrendador: <input type="text" id="nacionalidad_arrendador" value="Chileno(a)"></label>
+    <label>CI Arrendador: <input type="text" id="ci_arrendador" value="99.999.999-0"></label>
+    <label>Domicilio Arrendador: <input type="text" id="domicilio_arrendador" value="Calle Ficticia 1, comuna de Los Ángeles"></label>
+    <label>Arrendatario: <input type="text" id="arrendatario" value="Persona que necesita arrendar"></label>
+    <label>Nacionalidad Arrendatario: <input type="text" id="nacionalidad_arrendatario" value="Chileno(a)"></label>
+    <label>CI Arrendatario: <input type="text" id="ci_arrendatario" value="99.999.999-0"></label>
+    <label>Dirección del inmueble: <input type="text" id="direccion_inmueble" value="Calle Ficticia 1, comuna de Los Ángeles, Región del Biobío"></label>
+    <label>Uso: <input type="text" id="uso" value="Vivienda"></label>
+    <label>Inicio contrato: <input type="text" id="inicio" value="01 - 01 - 2025"></label>
+    <label>Término contrato: <input type="text" id="termino" value="01 - 01 - 2026"></label>
+    <label>Renta mensual: <input type="text" id="renta" value="$200.000"></label>
+    <label>Cuenta de depósito: <input type="text" id="cuenta" value="Cta RUT, Cuenta corriente, Cuenta vista"></label>
+    <label>Banco: <input type="text" id="banco" value="Estado"></label>
+    <label>Garantía: <input type="text" id="garantia" value="$200.000"></label>
+    
+    <button type="button" onclick="mostrarVistaPrevia()">Vista Previa</button>
+    <button type="submit">Generar PDF</button>
+  </form>
+
+  <div id="vistaPreviaContainer">
+    <h3>Vista Previa del Contrato</h3>
+    <pre id="vistaPrevia" style="white-space: pre-wrap;"></pre>
+    <button onclick="editarFormulario()">Modificar</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
