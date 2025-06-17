@@ -5,7 +5,7 @@ import datetime
 
 def generar_pdf(data):
     texto = f"""
-EN {data['ciudad'].upper()}, A {data['fecha'].upper()}, ENTRE {data['ARRENDADOR'].upper()} DE NACIONALIDAD {data['nacionalidad_arrendador'].upper()}, CÉDULA {data['cedula_arrendador'].upper()}, DOMICILIO EN {data['domicilio_arrendador'].upper()} Y {data['ARRENDATARIO'].upper()} DE NACIONALIDAD {data['nacionalidad_arrendatario'].upper()}, CÉDULA {data['cedula_arrendatario'].upper()}, SE CELEBRA CONTRATO DE ARRIENDO DEL INMUEBLE UBICADO EN {data['direccion_inmueble'].upper()}, DESTINADO A {data['uso'].upper()}, POR EL PERIODO DESDE {data['inicio'].upper()} HASTA {data['termino'].upper()}, CON RENTA MENSUAL DE {data['renta'].upper()} PAGADERA EN CUENTA {data['cuenta'].upper()} DEL BANCO {data['banco'].upper()}. SE ENTREGA COMO GARANTÍA LA SUMA DE {data['garantia'].upper()}.
+EN {data['ciudad'].upper()}, A {data['fecha'].upper()}, ENTRE {data['arrendador'].upper()} DE NACIONALIDAD {data['nacionalidad_arrendador'].upper()}, CÉDULA {data['cedula_arrendador'].upper()}, DOMICILIO EN {data['domicilio_arrendador'].upper()} Y {data['ARRENDATARIO'].upper()} DE NACIONALIDAD {data['nacionalidad_arrendatario'].upper()}, CÉDULA {data['cedula_arrendatario'].upper()}, SE CELEBRA CONTRATO DE ARRIENDO DEL INMUEBLE UBICADO EN {data['direccion_inmueble'].upper()}, DESTINADO A {data['uso'].upper()}, POR EL PERIODO DESDE {data['inicio'].upper()} HASTA {data['termino'].upper()}, CON RENTA MENSUAL DE {data['renta'].upper()} PAGADERA EN CUENTA {data['cuenta'].upper()} DEL BANCO {data['banco'].upper()}. SE ENTREGA COMO GARANTÍA LA SUMA DE {data['garantia'].upper()}.
     """
 
     pdf = FPDF()
