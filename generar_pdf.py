@@ -53,7 +53,7 @@ DÉCIMO SEXTO: El Arrendatario no podrá realizar mejoras sin el consentimiento 
 DÉCIMO SÉPTIMO: Cualquier aviso se enviará por escrito al domicilio señalado por cada parte.
 """
 
-    # Reemplazar caracteres problemáticos
+    # Limpieza de caracteres
     texto = (
         texto.replace("“", '"')
              .replace("”", '"')
@@ -67,21 +67,22 @@ DÉCIMO SÉPTIMO: Cualquier aviso se enviará por escrito al domicilio señalado
     # Espacio antes de la firma
     pdf.ln(20)
 
-    # FIRMAS centradas y ordenadas
+    # Sección de firmas
     pdf.set_font("Arial", "B", 14)
     pdf.cell(0, 10, "FIRMADO:", ln=True, align="C")
 
-    pdf.ln(10)
+    pdf.ln(15)
     pdf.set_font("Arial", "", 14)
     pdf.cell(0, 10, f"ARRENDADOR: {data['arrendador'].upper()}", ln=True, align="C")
     pdf.cell(0, 10, f"RUT: {data['rut_arrendador']}", ln=True, align="C")
 
-    pdf.ln(15)  # Separación entre ambas firmas
+    # Más separación entre firmas
+    pdf.ln(40)
 
     pdf.cell(0, 10, f"ARRENDATARIO: {data['arrendatario'].upper()}", ln=True, align="C")
     pdf.cell(0, 10, f"RUT: {data['rut_arrendatario']}", ln=True, align="C")
 
-    # Exportar el PDF como string y protegerlo
+    # Exportar y proteger el PDF
     pdf_output = (
         pdf.output(dest='S')
         .replace("“", '"')
@@ -91,7 +92,6 @@ DÉCIMO SÉPTIMO: Cualquier aviso se enviará por escrito al domicilio señalado
         .encode('latin1', errors='ignore')
     )
 
-    # Cifrar el PDF
     input_buffer = io.BytesIO(pdf_output)
     reader = PdfReader(input_buffer)
     writer = PdfWriter()
