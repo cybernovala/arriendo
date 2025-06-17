@@ -3,7 +3,6 @@ from PyPDF2 import PdfReader, PdfWriter
 import io
 
 def generar_pdf(data):
-    buffer = io.BytesIO()
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
@@ -51,13 +50,13 @@ FIRMADO:
 
 ARRENDADOR: {data['arrendador'].upper()} — RUT: {data['rut_arrendador']}
 ARRENDATARIO: {data['arrendatario'].upper()} — RUT: {data['rut_arrendatario']}
-    """, align="J")
+""", align="J")
 
-    pdf.output(buffer)
-    buffer.seek(0)
+    # Generar PDF como cadena binaria
+    pdf_output = pdf.output(dest='S').encode('latin1')  # fpdf necesita latin1
 
-    # Protección con contraseña
-    reader = PdfReader(buffer)
+    # Leer con PyPDF2 para protegerlo
+    reader = PdfReader(io.BytesIO(pdf_output))
     writer = PdfWriter()
     for page in reader.pages:
         writer.add_page(page)
