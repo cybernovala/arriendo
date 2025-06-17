@@ -1,12 +1,16 @@
 from fpdf import FPDF
 from PyPDF2 import PdfReader, PdfWriter
 import io
+import unicodedata
+
+def limpiar_texto(texto):
+    return unicodedata.normalize("NFKD", texto).encode("latin-1", "ignore").decode("latin-1")
 
 def generar_pdf(data):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=14)
-    pdf.multi_cell(0, 10, txt="CONTRATO DE ARRENDAMIENTO", align="C")
+    pdf.multi_cell(0, 10, txt=limpiar_texto("CONTRATO DE ARRENDAMIENTO"), align="C")
     pdf.ln()
 
     cuerpo = f"""
@@ -17,7 +21,7 @@ OBJETO: El Arrendador da en arriendo la propiedad ubicada en {data['direccion_in
 El resto de cláusulas legales se aplican conforme al contrato estándar y legislación chilena vigente.
     """
 
-    pdf.multi_cell(0, 10, cuerpo, align="J")
+    pdf.multi_cell(0, 10, limpiar_texto(cuerpo), align="J")
 
     temp = io.BytesIO()
     pdf.output(temp)
