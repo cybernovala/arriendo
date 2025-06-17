@@ -1,41 +1,48 @@
 from fpdf import FPDF
-from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2 import PdfWriter, PdfReader
 import io
 import datetime
 
-def generar_pdf(data):
-    texto = f"""
-EN {data['ciudad'].upper()}, A {data['fecha'].upper()}, ENTRE {data['arrendador'].upper()} DE NACIONALIDAD {data['nacionalidad_arrendador'].upper()}, CÉDULA {data['cedula_arrendador'].upper()}, DOMICILIO EN {data['domicilio_arrendador'].upper()} Y {data['arrendatario'].upper()} DE NACIONALIDAD {data['nacionalidad_arrendatario'].upper()}, CÉDULA {data['cedula_arrendatario'].upper()}, SE CELEBRA CONTRATO DE ARRIENDO DEL INMUEBLE UBICADO EN {data['direccion_inmueble'].upper()}, DESTINADO A {data['uso'].upper()}, POR EL PERIODO DESDE {data['inicio'].upper()} HASTA {data['termino'].upper()}, CON RENTA MENSUAL DE {data['renta'].upper()} PAGADERA EN CUENTA {data['cuenta'].upper()} DEL BANCO {data['banco'].upper()}. SE ENTREGA COMO GARANTÍA LA SUMA DE {data['garantia'].upper()}.
-    """
-
+def crear_contrato_pdf(data):
+    buffer = io.BytesIO()
     pdf = FPDF()
     pdf.add_page()
+    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "CONTRATO DE ARRIENDO", ln=True, align="C")
+    pdf.cell(0, 10, "CONTRATO DE ARRENDAMIENTO", ln=True, align="C")
     pdf.ln(10)
+
     pdf.set_font("Arial", "", 14)
-    pdf.multi_cell(0, 10, texto, align="J")
-    pdf.ln(20)
-    pdf.cell(0, 10, f"Los Ángeles, {datetime.datetime.now().strftime('%d de %B de %Y')}", ln=True, align="R")
+    texto = f"""
+EN {data['ciudad']} DE CHILE, A {data['dia']} DE {data['mes']} DEL AÑO {data['anio']}, ENTRE: DON(ÑA) {data['arrendador']}, NACIONALIDAD {data['nacionalidad_arrendador']}, CÉDULA DE IDENTIDAD N° {data['rut_arrendador']}, CON DOMICILIO EN {data['direccion_arrendador']}, COMUNA DE {data['comuna_arrendador']} (EN ADELANTE, EL “ARRENDADOR”); Y POR OTRA PARTE DON(ÑA) {data['arrendatario']}, NACIONALIDAD {data['nacionalidad_arrendatario']}, CÉDULA DE IDENTIDAD N° {data['rut_arrendatario']}, CON DOMICILIO EN {data['direccion_arrendatario']} (EN ADELANTE, EL “ARRENDATARIO”), Y CONJUNTAMENTE, LAS “PARTES”.
 
-    pdf.ln(30)
-    pdf.cell(90, 10, "FIRMA ARRENDADOR", ln=0, align="C")
-    pdf.cell(0, 10, "FIRMA ARRENDATARIO", ln=1, align="C")
-    pdf.cell(90, 10, data["cedula_arrendador"], ln=0, align="C")
-    pdf.cell(0, 10, data["cedula_arrendatario"], ln=1, align="C")
+[CONTENIDO DEL CONTRATO...]
 
-    # Guardar PDF como string (dest='S'), luego pasar a buffer
-    pdf_output = pdf.output(dest='S').encode('latin1')
-    buffer = io.BytesIO(pdf_output)
+FIRMAS:
 
-    # Proteger PDF
+___________________________
+{data['arrendador']}
+RUT: {data['rut_arrendador']}
+
+___________________________
+{data['arrendatario']}
+RUT: {data['rut_arrendatario']}
+    """
+
+    for parrafo in texto.strip().split("\n\n"):
+        pdf.multi_cell(0, 8, parrafo.strip(), align="J")
+        pdf.ln(2)
+
+    pdf.output(buffer)
+    buffer.seek(0)
+
+    # Protección con contraseña
     reader = PdfReader(buffer)
     writer = PdfWriter()
-    for page in reader.pages:
-        writer.add_page(page)
+    writer.append_pages_from_reader(reader)
+    writer.encrypt(user_password="@@1234@@", owner_password=None, use_128bit=True)
 
-    writer.encrypt(user_password="@@1234@@", owner_password="@@1234@@")
-    output_buffer = io.BytesIO()
-    writer.write(output_buffer)
-    output_buffer.seek(0)
-    return output_buffer.read()
+    final_pdf = io.BytesIO()
+    writer.write(final_pdf)
+    final_pdf.seek(0)
+    return final_pdf
