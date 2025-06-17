@@ -9,5 +9,10 @@ CORS(app)
 @app.route("/generar_pdf", methods=["POST"])
 def generar():
     data = request.get_json()
-    output = generar_pdf(data)
-    return send_file(output, as_attachment=True, download_name="arriendo_cybernova.pdf")
+    pdf_bytes = generar_pdf(data)
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name="arriendo_cybernova.pdf"
+    )
