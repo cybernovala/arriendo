@@ -23,9 +23,9 @@ El resto de cláusulas legales se aplican conforme al contrato estándar y legis
 
     pdf.multi_cell(0, 10, limpiar_texto(cuerpo), align="J")
 
-    temp = io.BytesIO()
-    pdf.output(temp)
-    temp.seek(0)
+    # ✅ Exportar como string y luego convertir a BytesIO
+    pdf_bytes = pdf.output(dest='S').encode('latin-1')
+    temp = io.BytesIO(pdf_bytes)
 
     reader = PdfReader(temp)
     writer = PdfWriter()
