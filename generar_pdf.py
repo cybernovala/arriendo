@@ -1,38 +1,68 @@
 from fpdf import FPDF
 from PyPDF2 import PdfReader, PdfWriter
 import io
-import unicodedata
-
-def limpiar_texto(texto):
-    return unicodedata.normalize("NFKD", texto).encode("latin-1", "ignore").decode("latin-1")
 
 def generar_pdf(data):
+    buffer = io.BytesIO()
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=14)
-    pdf.multi_cell(0, 10, txt=limpiar_texto("CONTRATO DE ARRENDAMIENTO"), align="C")
-    pdf.ln()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "CONTRATO DE ARRIENDO", ln=True, align="C")
 
-    cuerpo = f"""
-En {data['ciudad']} de Chile, a {data['fecha']}, entre: don(ña) {data['arrendador']}, nacionalidad {data['nacionalidad_arrendador']}, cédula de identidad N° {data['rut_arrendador']} con domicilio en {data['domicilio_arrendador']} (en adelante, el “Arrendador”); por una parte, y por la otra don(ña) {data['arrendatario']}, nacionalidad {data['nacionalidad_arrendatario']}, cédula de identidad N° {data['rut_arrendatario']} con domicilio en {data['direccion_inmueble']} (en adelante, el “Arrendatario”), acuerdan el siguiente contrato...
+    pdf.set_font("Arial", "", 14)
+    pdf.multi_cell(0, 10, f"""
+En {data['ciudad']}, a {data['fecha']}, entre: don(ña) {data['arrendador'].upper()}, nacionalidad {data['nacionalidad_arrendador'].upper()}, RUT {data['rut_arrendador']}, con domicilio en {data['domicilio_arrendador'].upper()} (en adelante, el “Arrendador”); y don(ña) {data['arrendatario'].upper()}, nacionalidad {data['nacionalidad_arrendatario'].upper()}, RUT {data['rut_arrendatario']}, con domicilio en {data['domicilio_arrendatario'].upper()} (en adelante, el “Arrendatario”), acuerdan el siguiente contrato:
 
-OBJETO: El Arrendador da en arriendo la propiedad ubicada en {data['direccion_inmueble']} para uso exclusivo de {data['uso_inmueble']}. La vigencia será del {data['inicio_vigencia']} al {data['termino_vigencia']}. La renta será de {data['renta']} pagada a la cuenta {data['cuenta']} del Banco {data['banco']}. Garantía: {data['garantia']}.
+PRIMERO: El Arrendador da en arriendo al Arrendatario el inmueble ubicado en {data['direccion_inmueble'].upper()}, destinado exclusivamente para {data['uso'].upper()}.
 
-El resto de cláusulas legales se aplican conforme al contrato estándar y legislación chilena vigente.
-    """
+SEGUNDO: El contrato tiene una duración de un año, desde el {data['inicio']} hasta el {data['termino']}, renovable automáticamente salvo aviso en contrario.
 
-    pdf.multi_cell(0, 10, limpiar_texto(cuerpo), align="J")
+TERCERO: El Arrendatario pagará una renta mensual de {data['renta']} pesos, pagaderos dentro de los primeros cinco días de cada mes en la cuenta {data['cuenta']} del banco {data['banco']} a nombre del Arrendador.
 
-    # ✅ Exportar como string y luego convertir a BytesIO
-    pdf_bytes = pdf.output(dest='S').encode('latin-1')
-    temp = io.BytesIO(pdf_bytes)
+CUARTO: El Arrendatario entrega al Arrendador la suma de {data['garantia']} pesos en calidad de garantía, la cual será restituida al término del contrato si no existen deudas ni daños.
 
-    reader = PdfReader(temp)
+QUINTO: El Arrendatario no podrá subarrendar ni ceder total o parcialmente este contrato sin autorización escrita del Arrendador.
+
+SEXTO: El Arrendatario se obliga a mantener en buen estado el inmueble y devolverlo en las mismas condiciones en que lo recibió, salvo deterioro natural por uso legítimo.
+
+SÉPTIMO: El Arrendatario autoriza expresamente al Arrendador a visitar el inmueble previa notificación, para verificar su estado.
+
+OCTAVO: El no pago de la renta dentro del plazo señalado será causal de término anticipado del contrato.
+
+NOVENO: Son de cargo del Arrendatario los gastos comunes, servicios básicos, contribuciones y toda otra obligación que derive del uso del inmueble.
+
+DÉCIMO: El Arrendador se obliga a no alterar la tranquilidad del Arrendatario durante la vigencia del contrato.
+
+DÉCIMO PRIMERO: El Arrendatario deberá notificar al Arrendador con al menos 30 días de anticipación si desea poner término anticipado al contrato.
+
+DÉCIMO SEGUNDO: Ambas partes acuerdan que toda modificación a este contrato deberá constar por escrito y firmada por ambos.
+
+DÉCIMO TERCERO: En caso de conflicto, las partes se someten a la jurisdicción de los tribunales de la ciudad de {data['ciudad'].upper()}.
+
+DÉCIMO CUARTO: El presente contrato se firma en dos ejemplares del mismo tenor.
+
+DÉCIMO QUINTO: Las partes declaran haber leído íntegramente el contrato y aceptan todas sus cláusulas.
+
+DÉCIMO SEXTO: El Arrendatario no podrá realizar mejoras sin el consentimiento escrito del Arrendador.
+
+DÉCIMO SÉPTIMO: Cualquier aviso se enviará por escrito al domicilio señalado por cada parte.
+
+FIRMADO:
+
+ARRENDADOR: {data['arrendador'].upper()} — RUT: {data['rut_arrendador']}
+ARRENDATARIO: {data['arrendatario'].upper()} — RUT: {data['rut_arrendatario']}
+    """, align="J")
+
+    pdf.output(buffer)
+    buffer.seek(0)
+
+    # Protección con contraseña
+    reader = PdfReader(buffer)
     writer = PdfWriter()
-    writer.append_pages_from_reader(reader)
-    writer.encrypt(user_password="@@1234@@", owner_password="@@1234@@")
-    
-    output = io.BytesIO()
-    writer.write(output)
-    output.seek(0)
-    return output
+    for page in reader.pages:
+        writer.add_page(page)
+    writer.encrypt(user_password="@@1234@@", owner_password=None, use_128bit=True)
+
+    output_buffer = io.BytesIO()
+    writer.write(output_buffer)
+    return output_buffer.getvalue()
