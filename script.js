@@ -1,71 +1,38 @@
-const backendUrl = "https://arriendo-2wag.onrender.com/generar_pdf";
-
-const form = document.getElementById("formulario");
-const btnVistaPrevia = document.getElementById("vista-previa");
-const btnModificar = document.getElementById("modificar");
-const btnGenerar = document.getElementById("generar");
-
-btnVistaPrevia.addEventListener("click", () => {
-  const inputs = form.querySelectorAll("input");
-  inputs.forEach(input => input.setAttribute("readonly", true));
-  btnVistaPrevia.style.display = "none";
-  btnModificar.style.display = "block";
-  btnGenerar.style.display = "block";
-});
-
-btnModificar.addEventListener("click", () => {
-  const inputs = form.querySelectorAll("input");
-  inputs.forEach(input => input.removeAttribute("readonly"));
-  btnVistaPrevia.style.display = "block";
-  btnModificar.style.display = "none";
-  btnGenerar.style.display = "none";
-});
-
-form.addEventListener("submit", async function (e) {
+document.getElementById("formulario").addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const datos = {
-    ciudad: document.getElementById("ciudad").value,
-    fecha: document.getElementById("fecha").value,
-    arrendador: document.getElementById("arrendador").value,
-    nacionalidad_arrendador: document.getElementById("nacionalidad_arrendador").value,
-    cedula_arrendador: document.getElementById("cedula_arrendador").value,
-    domicilio_arrendador: document.getElementById("domicilio_arrendador").value,
-    arrendatario: document.getElementById("arrendatario").value,
-    nacionalidad_arrendatario: document.getElementById("nacionalidad_arrendatario").value,
-    cedula_arrendatario: document.getElementById("cedula_arrendatario").value,
-    direccion_inmueble: document.getElementById("direccion_inmueble").value,
-    uso: document.getElementById("uso").value,
-    inicio: document.getElementById("inicio").value,
-    termino: document.getElementById("termino").value,
-    renta: document.getElementById("renta").value,
-    cuenta: document.getElementById("cuenta").value,
-    banco: document.getElementById("banco").value,
-    garantia: document.getElementById("garantia").value
+    ciudad: document.getElementById("ciudad").value.toUpperCase(),
+    dia: document.getElementById("dia").value,
+    mes: document.getElementById("mes").value.toUpperCase(),
+    anio: document.getElementById("anio").value,
+    arrendador: document.getElementById("arrendador").value.toUpperCase(),
+    nacionalidad_arrendador: document.getElementById("nacionalidad_arrendador").value.toUpperCase(),
+    rut_arrendador: document.getElementById("rut_arrendador").value,
+    direccion_arrendador: document.getElementById("direccion_arrendador").value.toUpperCase(),
+    comuna_arrendador: document.getElementById("comuna_arrendador").value.toUpperCase(),
+    arrendatario: document.getElementById("arrendatario").value.toUpperCase(),
+    nacionalidad_arrendatario: document.getElementById("nacionalidad_arrendatario").value.toUpperCase(),
+    rut_arrendatario: document.getElementById("rut_arrendatario").value,
+    direccion_arrendatario: document.getElementById("direccion_arrendatario").value.toUpperCase()
   };
 
   try {
-    const response = await fetch(backendUrl, {
+    const response = await fetch("https://arriendo-2wag.onrender.com/generar_pdf", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos)
     });
 
     if (!response.ok) throw new Error("Error al generar PDF");
 
     const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "arriendo_cybernova.pdf";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "arriendo_cybernova.pdf";
+    link.click();
   } catch (error) {
-    alert("Error al generar el PDF. Intenta de nuevo.");
+    alert("Hubo un error al generar el PDF.");
     console.error("Error:", error);
   }
 });
