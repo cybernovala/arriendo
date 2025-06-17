@@ -1,19 +1,19 @@
-const backendURL = "https://arriendo-2wag.onrender.com/generar_pdf";
+function vistaPrevia() {
+  const datos = obtenerDatos();
+  const preview = `
+CONTRATO DE ARRENDAMIENTO
 
-function mostrarVistaPrevia() {
-  const data = obtenerDatosFormulario();
-  const texto = generarTextoVistaPrevia(data);
-  document.getElementById("vistaPreviaTexto").textContent = texto;
-  document.getElementById("formulario").style.display = "none";
-  document.getElementById("vistaPreviaContainer").style.display = "block";
+En ${datos.ciudad} de Chile, a ${datos.fecha}, entre: don(ña) ${datos.arrendador}, nacionalidad ${datos.nacionalidad_arrendador}, cédula de identidad N° ${datos.rut_arrendador}, con domicilio en ${datos.domicilio_arrendador} (en adelante, el “Arrendador”); y don(ña) ${datos.arrendatario}, nacionalidad ${datos.nacionalidad_arrendatario}, cédula de identidad N° ${datos.rut_arrendatario}, con domicilio en ${datos.domicilio_arrendatario} (en adelante, el “Arrendatario”), exponen que han convenido el siguiente Contrato...
+
+[Texto completo en el backend]
+  `;
+
+  document.getElementById("preview").innerText = preview;
+  document.getElementById("preview").style.display = "block";
+  document.getElementById("btn-generar").style.display = "block";
 }
 
-function ocultarVistaPrevia() {
-  document.getElementById("formulario").style.display = "block";
-  document.getElementById("vistaPreviaContainer").style.display = "none";
-}
-
-function obtenerDatosFormulario() {
+function obtenerDatos() {
   return {
     ciudad: document.getElementById("ciudad").value,
     fecha: document.getElementById("fecha").value,
@@ -24,10 +24,11 @@ function obtenerDatosFormulario() {
     arrendatario: document.getElementById("arrendatario").value,
     nacionalidad_arrendatario: document.getElementById("nacionalidad_arrendatario").value,
     rut_arrendatario: document.getElementById("rut_arrendatario").value,
+    domicilio_arrendatario: document.getElementById("domicilio_arrendatario").value,
     direccion_inmueble: document.getElementById("direccion_inmueble").value,
-    uso_inmueble: document.getElementById("uso_inmueble").value,
-    inicio_vigencia: document.getElementById("inicio_vigencia").value,
-    termino_vigencia: document.getElementById("termino_vigencia").value,
+    uso: document.getElementById("uso").value,
+    inicio: document.getElementById("inicio").value,
+    termino: document.getElementById("termino").value,
     renta: document.getElementById("renta").value,
     cuenta: document.getElementById("cuenta").value,
     banco: document.getElementById("banco").value,
@@ -35,31 +36,21 @@ function obtenerDatosFormulario() {
   };
 }
 
-function generarTextoVistaPrevia(data) {
-  return `Contrato de Arriendo entre ${data.arrendador} y ${data.arrendatario}, por la propiedad en ${data.direccion_inmueble}. Renta mensual de ${data.renta}, inicio ${data.inicio_vigencia}, término ${data.termino_vigencia}.`;
+async function generarPDF() {
+  const datos = obtenerDatos();
+
+  const response = await fetch("https://arriendo-2wag.onrender.com/generar_pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datos),
+  });
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "arriendo_cybernova.pdf";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
-
-document.getElementById("formulario").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  const data = obtenerDatosFormulario();
-
-  try {
-    const response = await fetch(backendURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) throw new Error("Error al generar PDF");
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "arriendo_cybernova.pdf";
-    a.click();
-    window.URL.revokeObjectURL(url);
-  } catch (err) {
-    alert("Error al generar el PDF.");
-  }
-});
