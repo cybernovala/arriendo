@@ -24,11 +24,11 @@ EN {data['ciudad'].upper()}, A {data['fecha'].upper()}, ENTRE {data['arrendador'
     pdf.cell(90, 10, data["cedula_arrendador"], ln=0, align="C")
     pdf.cell(0, 10, data["cedula_arrendatario"], ln=1, align="C")
 
-    buffer = io.BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
+    # Guardar PDF como string (dest='S'), luego pasar a buffer
+    pdf_output = pdf.output(dest='S').encode('latin1')
+    buffer = io.BytesIO(pdf_output)
 
-    # Proteger PDF con contraseña
+    # Proteger PDF
     reader = PdfReader(buffer)
     writer = PdfWriter()
     for page in reader.pages:
