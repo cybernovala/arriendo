@@ -1,48 +1,34 @@
 from fpdf import FPDF
-from PyPDF2 import PdfWriter, PdfReader
+from PyPDF2 import PdfReader, PdfWriter
 import io
-import datetime
 
-def crear_contrato_pdf(data):
-    buffer = io.BytesIO()
+def generar_pdf(data):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "CONTRATO DE ARRENDAMIENTO", ln=True, align="C")
-    pdf.ln(10)
+    pdf.set_font("Arial", size=14)
+    pdf.multi_cell(0, 10, txt="CONTRATO DE ARRENDAMIENTO", align="C")
+    pdf.ln()
 
-    pdf.set_font("Arial", "", 14)
-    texto = f"""
-EN {data['ciudad']} DE CHILE, A {data['dia']} DE {data['mes']} DEL AÑO {data['anio']}, ENTRE: DON(ÑA) {data['arrendador']}, NACIONALIDAD {data['nacionalidad_arrendador']}, CÉDULA DE IDENTIDAD N° {data['rut_arrendador']}, CON DOMICILIO EN {data['direccion_arrendador']}, COMUNA DE {data['comuna_arrendador']} (EN ADELANTE, EL “ARRENDADOR”); Y POR OTRA PARTE DON(ÑA) {data['arrendatario']}, NACIONALIDAD {data['nacionalidad_arrendatario']}, CÉDULA DE IDENTIDAD N° {data['rut_arrendatario']}, CON DOMICILIO EN {data['direccion_arrendatario']} (EN ADELANTE, EL “ARRENDATARIO”), Y CONJUNTAMENTE, LAS “PARTES”.
+    cuerpo = f"""
+En {data['ciudad']} de Chile, a {data['fecha']}, entre: don(ña) {data['arrendador']}, nacionalidad {data['nacionalidad_arrendador']}, cédula de identidad N° {data['rut_arrendador']} con domicilio en {data['domicilio_arrendador']} (en adelante, el “Arrendador”); por una parte, y por la otra don(ña) {data['arrendatario']}, nacionalidad {data['nacionalidad_arrendatario']}, cédula de identidad N° {data['rut_arrendatario']} con domicilio en {data['direccion_inmueble']} (en adelante, el “Arrendatario”), acuerdan el siguiente contrato...
 
-[CONTENIDO DEL CONTRATO...]
+OBJETO: El Arrendador da en arriendo la propiedad ubicada en {data['direccion_inmueble']} para uso exclusivo de {data['uso_inmueble']}. La vigencia será del {data['inicio_vigencia']} al {data['termino_vigencia']}. La renta será de {data['renta']} pagada a la cuenta {data['cuenta']} del Banco {data['banco']}. Garantía: {data['garantia']}.
 
-FIRMAS:
-
-___________________________
-{data['arrendador']}
-RUT: {data['rut_arrendador']}
-
-___________________________
-{data['arrendatario']}
-RUT: {data['rut_arrendatario']}
+El resto de cláusulas legales se aplican conforme al contrato estándar y legislación chilena vigente.
     """
 
-    for parrafo in texto.strip().split("\n\n"):
-        pdf.multi_cell(0, 8, parrafo.strip(), align="J")
-        pdf.ln(2)
+    pdf.multi_cell(0, 10, cuerpo, align="J")
 
-    pdf.output(buffer)
-    buffer.seek(0)
+    temp = io.BytesIO()
+    pdf.output(temp)
+    temp.seek(0)
 
-    # Protección con contraseña
-    reader = PdfReader(buffer)
+    reader = PdfReader(temp)
     writer = PdfWriter()
     writer.append_pages_from_reader(reader)
-    writer.encrypt(user_password="@@1234@@", owner_password=None, use_128bit=True)
-
-    final_pdf = io.BytesIO()
-    writer.write(final_pdf)
-    final_pdf.seek(0)
-    return final_pdf
+    writer.encrypt(user_password="@@1234@@", owner_password="@@1234@@")
+    
+    output = io.BytesIO()
+    writer.write(output)
+    output.seek(0)
+    return output
