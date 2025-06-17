@@ -1,98 +1,91 @@
 from fpdf import FPDF
 from PyPDF2 import PdfReader, PdfWriter
 import io
-from datetime import datetime
 
 def generar_pdf(data):
+    buffer = io.BytesIO()
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
+
+    # Título principal
     pdf.set_font("Arial", "B", 16)
-
-    # Título
     pdf.cell(0, 10, "CONTRATO DE ARRIENDO", ln=True, align="C")
-    pdf.ln(10)
-    pdf.set_font("Arial", "", 14)
 
-    # Construcción del texto legal
+    # Texto del contrato
+    pdf.set_font("Arial", "", 14)
     texto = f"""
-En la ciudad de {data['ciudad'].upper()}, con fecha {data['fecha'].upper()}, comparecen: por una parte don {data['nombre_arrendador'].upper()}, RUT {data['rut_arrendador']}, en adelante el ARRENDADOR; y por la otra, don {data['nombre_arrendatario'].upper()}, RUT {data['rut_arrendatario']}, en adelante el ARRENDATARIO. Ambas partes convienen en celebrar el presente contrato de arriendo sujeto a las siguientes cláusulas:
+En {data['ciudad']}, a {data['fecha']}, entre: don(ña) {data['arrendador'].upper()}, nacionalidad {data['nacionalidad_arrendador'].upper()}, RUT {data['rut_arrendador']}, con domicilio en {data['domicilio_arrendador'].upper()} (en adelante, el "Arrendador"); y don(ña) {data['arrendatario'].upper()}, nacionalidad {data['nacionalidad_arrendatario'].upper()}, RUT {data['rut_arrendatario']}, con domicilio en {data['domicilio_arrendatario'].upper()} (en adelante, el "Arrendatario"), acuerdan el siguiente contrato:
 
-PRIMERA: El ARRENDADOR da en arriendo al ARRENDATARIO el inmueble ubicado en {data['direccion_inmueble'].upper()}.
+PRIMERO: El Arrendador da en arriendo al Arrendatario el inmueble ubicado en {data['direccion_inmueble'].upper()}, destinado exclusivamente para {data['uso'].upper()}.
 
-SEGUNDA: El plazo del presente contrato es de {data['plazo_contrato'].upper()}, comenzando el {data['inicio_contrato'].upper()}.
+SEGUNDO: El contrato tiene una duración de un año, desde el {data['inicio']} hasta el {data['termino']}, renovable automáticamente salvo aviso en contrario.
 
-TERCERA: El canon mensual de arriendo será de ${data['monto_arriendo']} ({data['monto_palabras'].upper()}), pagaderos por adelantado dentro de los primeros cinco días de cada mes.
+TERCERO: El Arrendatario pagará una renta mensual de {data['renta']} pesos, pagaderos dentro de los primeros cinco días de cada mes en la cuenta {data['cuenta']} del banco {data['banco']} a nombre del Arrendador.
 
-CUARTA: Los pagos deberán efectuarse en {data['lugar_pago'].upper()} o mediante transferencia a la cuenta {data['cuenta_bancaria']}.
+CUARTO: El Arrendatario entrega al Arrendador la suma de {data['garantia']} pesos en calidad de garantía, la cual será restituida al término del contrato si no existen deudas ni daños.
 
-QUINTA: El ARRENDATARIO se obliga a usar el inmueble exclusivamente como {data['uso_inmueble'].upper()}.
+QUINTO: El Arrendatario no podrá subarrendar ni ceder total o parcialmente este contrato sin autorización escrita del Arrendador.
 
-SEXTA: No podrá subarrendar ni ceder el contrato sin autorización escrita del ARRENDADOR.
+SEXTO: El Arrendatario se obliga a mantener en buen estado el inmueble y devolverlo en las mismas condiciones en que lo recibió, salvo deterioro natural por uso legítimo.
 
-SÉPTIMA: El ARRENDATARIO es responsable de mantener el inmueble en buen estado y responderá por los daños que se causen.
+SÉPTIMO: El Arrendatario autoriza expresamente al Arrendador a visitar el inmueble previa notificación, para verificar su estado.
 
-OCTAVA: El ARRENDATARIO deberá permitir la inspección del inmueble por parte del ARRENDADOR previo aviso razonable.
+OCTAVO: El no pago de la renta dentro del plazo señalado será causal de término anticipado del contrato.
 
-NOVENA: Los gastos comunes, contribuciones y servicios básicos serán de cargo del ARRENDATARIO, salvo pacto en contrario.
+NOVENO: Son de cargo del Arrendatario los gastos comunes, servicios básicos, contribuciones y toda otra obligación que derive del uso del inmueble.
 
-DÉCIMA: El incumplimiento de alguna de las cláusulas facultará al ARRENDADOR para poner término anticipado al contrato.
+DÉCIMO: El Arrendador se obliga a no alterar la tranquilidad del Arrendatario durante la vigencia del contrato.
 
-DÉCIMA PRIMERA: El contrato podrá renovarse previo acuerdo por escrito de ambas partes.
+DÉCIMO PRIMERO: El Arrendatario deberá notificar al Arrendador con al menos 30 días de anticipación si desea poner término anticipado al contrato.
 
-DÉCIMA SEGUNDA: El ARRENDATARIO deberá restituir el inmueble en las condiciones en que lo recibió, salvo deterioros por uso legítimo.
+DÉCIMO SEGUNDO: Ambas partes acuerdan que toda modificación a este contrato deberá constar por escrito y firmada por ambos.
 
-DÉCIMA TERCERA: En caso de controversias, las partes fijan su domicilio en la ciudad de {data['ciudad'].upper()} y se someten a la jurisdicción de sus tribunales.
+DÉCIMO TERCERO: En caso de conflicto, las partes se someten a la jurisdicción de los tribunales de la ciudad de {data['ciudad'].upper()}.
 
-DÉCIMA CUARTA: Las partes declaran haber leído y entendido el presente contrato.
+DÉCIMO CUARTO: El presente contrato se firma en dos ejemplares del mismo tenor.
 
-DÉCIMA QUINTA: Este contrato se firma en dos ejemplares del mismo tenor y fecha, quedando uno en poder de cada parte.
+DÉCIMO QUINTO: Las partes declaran haber leído íntegramente el contrato y aceptan todas sus cláusulas.
 
-DÉCIMA SEXTA: El ARRENDATARIO constituye domicilio especial en el inmueble objeto de este contrato.
+DÉCIMO SEXTO: El Arrendatario no podrá realizar mejoras sin el consentimiento escrito del Arrendador.
 
-DÉCIMA SÉPTIMA: Las partes acuerdan que toda comunicación deberá realizarse al correo electrónico o número telefónico declarado.
+DÉCIMO SÉPTIMO: Cualquier aviso se enviará por escrito al domicilio señalado por cada parte.
 
-Y en prueba de conformidad, firman.
-"""
+FIRMADO:
 
-    # Insertar el texto con justificación
-    for parrafo in texto.strip().split("\n\n"):
-        pdf.multi_cell(0, 10, parrafo.strip(), align="J")
-        pdf.ln(2)
+ARRENDADOR: {data['arrendador'].upper()} — RUT: {data['rut_arrendador']}
+ARRENDATARIO: {data['arrendatario'].upper()} — RUT: {data['rut_arrendatario']}
+"""  # <-- triple comillas cerradas aquí correctamente
 
-    # Fecha al pie
-    fecha_actual = datetime.now().strftime("%d de %B de %Y")
-    ciudad = data['ciudad'].capitalize()
-    pdf.ln(10)
-    pdf.cell(0, 10, f"{ciudad}, {fecha_actual}", ln=True, align="R")
+    # Reemplazar caracteres problemáticos
+    texto = (
+        texto.replace("“", '"')
+             .replace("”", '"')
+             .replace("’", "'")
+             .replace("–", "-")
+             .replace("—", "-")
+    )
 
-    # Firmas centradas y ordenadas
-    pdf.ln(20)
-    pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 10, "FIRMADO:", ln=True, align="C")
+    pdf.multi_cell(0, 10, texto, align="J")
 
-    pdf.set_font("Arial", "", 14)
-    pdf.ln(5)
-    pdf.cell(0, 10, f"ARRENDADOR: {data['nombre_arrendador'].upper()}", ln=True, align="C")
-    pdf.cell(0, 10, f"RUT: {data['rut_arrendador']}", ln=True, align="C")
+    # Exportar el PDF como string y protegerlo
+    pdf_output = (
+        pdf.output(dest='S')
+        .replace("“", '"')
+        .replace("”", '"')
+        .replace("’", "'")
+        .replace("–", "-")
+        .encode('latin1', errors='ignore')
+    )
 
-    pdf.ln(5)
-    pdf.cell(0, 10, f"ARRENDATARIO: {data['nombre_arrendatario'].upper()}", ln=True, align="C")
-    pdf.cell(0, 10, f"RUT: {data['rut_arrendatario']}", ln=True, align="C")
-
-    # Convertir a bytes y aplicar protección
-    pdf_output = io.BytesIO()
-    pdf.output(pdf_output)
-    pdf_output.seek(0)
-
-    reader = PdfReader(pdf_output)
+    # Cifrar el PDF
+    input_buffer = io.BytesIO(pdf_output)
+    reader = PdfReader(input_buffer)
     writer = PdfWriter()
     for page in reader.pages:
         writer.add_page(page)
-
     writer.encrypt(user_password="@@1234@@", owner_password=None, use_128bit=True)
 
-    final_output = io.BytesIO()
-    writer.write(final_output)
-    final_output.seek(0)
-    return final_output
+    output_buffer = io.BytesIO()
+    writer.write(output_buffer)
+    return output_buffer.getvalue()
