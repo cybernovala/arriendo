@@ -11,6 +11,7 @@ def generar_pdf(data):
     # Título principal
     pdf.set_font("Arial", "B", 16)
     pdf.cell(0, 10, "CONTRATO DE ARRIENDO", ln=True, align="C")
+    pdf.ln(10)
 
     # Texto del contrato
     pdf.set_font("Arial", "", 14)
@@ -50,12 +51,7 @@ DÉCIMO QUINTO: Las partes declaran haber leído íntegramente el contrato y ace
 DÉCIMO SEXTO: El Arrendatario no podrá realizar mejoras sin el consentimiento escrito del Arrendador.
 
 DÉCIMO SÉPTIMO: Cualquier aviso se enviará por escrito al domicilio señalado por cada parte.
-
-FIRMADO:
-
-ARRENDADOR: {data['arrendador'].upper()} — RUT: {data['rut_arrendador']}
-ARRENDATARIO: {data['arrendatario'].upper()} — RUT: {data['rut_arrendatario']}
-"""  # <-- triple comillas cerradas aquí correctamente
+"""
 
     # Reemplazar caracteres problemáticos
     texto = (
@@ -66,7 +62,24 @@ ARRENDATARIO: {data['arrendatario'].upper()} — RUT: {data['rut_arrendatario']}
              .replace("—", "-")
     )
 
-    pdf.multi_cell(0, 10, texto, align="J")
+    pdf.multi_cell(0, 10, texto.strip(), align="J")
+
+    # Espacio antes de la firma
+    pdf.ln(20)
+
+    # FIRMAS centradas y ordenadas
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 10, "FIRMADO:", ln=True, align="C")
+
+    pdf.ln(10)
+    pdf.set_font("Arial", "", 14)
+    pdf.cell(0, 10, f"ARRENDADOR: {data['arrendador'].upper()}", ln=True, align="C")
+    pdf.cell(0, 10, f"RUT: {data['rut_arrendador']}", ln=True, align="C")
+
+    pdf.ln(15)  # Separación entre ambas firmas
+
+    pdf.cell(0, 10, f"ARRENDATARIO: {data['arrendatario'].upper()}", ln=True, align="C")
+    pdf.cell(0, 10, f"RUT: {data['rut_arrendatario']}", ln=True, align="C")
 
     # Exportar el PDF como string y protegerlo
     pdf_output = (
