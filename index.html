@@ -3,117 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contrato de Arriendo - Cybernova</title>
+  <title>Contrato de Arriendo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(to bottom, #f0f0f0, #d0e0f0);
       padding: 20px;
-      margin: 0;
+      background: #f4f4f4;
     }
+
     h1 {
       text-align: center;
-      color: #003366;
     }
+
     form {
-      max-width: 600px;
-      margin: auto;
       background: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
     }
+
     label {
-      display: block;
-      margin-top: 15px;
       font-weight: bold;
+      display: block;
+      margin-top: 10px;
     }
+
     input, textarea {
       width: 100%;
-      padding: 12px;
-      font-size: 16px;
+      padding: 8px;
       margin-top: 5px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
     }
+
     button {
       margin-top: 20px;
-      padding: 12px;
+      padding: 10px 20px;
       font-size: 16px;
-      width: 100%;
+      background: #007bff;
+      color: white;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #vista-previa, #modificar {
-      background-color: #007bff;
-      color: white;
-    }
-    #generar {
-      background-color: #28a745;
-      color: white;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-
-  <h1>Contrato de Arriendo - Cybernova</h1>
+  <h1>Contrato de Arriendo</h1>
   <form id="formulario">
     <label>Ciudad</label>
-    <input type="text" id="ciudad" value="Los Ángeles" />
-
-    <label>Fecha</label>
-    <input type="text" id="fecha" value="17 de junio de 2025" />
-
-    <label>Arrendador</label>
-    <input type="text" id="arrendador" value="Dueño o representante del inmueble" />
-
+    <input type="text" id="ciudad" required />
+    
+    <label>Día</label>
+    <input type="text" id="dia" required />
+    
+    <label>Mes</label>
+    <input type="text" id="mes" required />
+    
+    <label>Año</label>
+    <input type="text" id="anio" required />
+    
+    <label>Nombre Arrendador</label>
+    <input type="text" id="arrendador" required />
+    
     <label>Nacionalidad Arrendador</label>
-    <input type="text" id="nacionalidad_arrendador" value="Chileno(a)" />
-
-    <label>Cédula de Identidad Arrendador</label>
-    <input type="text" id="cedula_arrendador" value="99.999.999-0" />
-
-    <label>Domicilio Arrendador</label>
-    <input type="text" id="domicilio_arrendador" value="Calle Ficticia 1, Comuna de Los Ángeles" />
-
-    <label>Arrendatario</label>
-    <input type="text" id="arrendatario" value="Persona que necesita arrendar" />
-
+    <input type="text" id="nacionalidad_arrendador" required />
+    
+    <label>RUT Arrendador</label>
+    <input type="text" id="rut_arrendador" required />
+    
+    <label>Dirección Arrendador</label>
+    <input type="text" id="direccion_arrendador" required />
+    
+    <label>Comuna Arrendador</label>
+    <input type="text" id="comuna_arrendador" required />
+    
+    <label>Nombre Arrendatario</label>
+    <input type="text" id="arrendatario" required />
+    
     <label>Nacionalidad Arrendatario</label>
-    <input type="text" id="nacionalidad_arrendatario" value="Chileno(a)" />
-
-    <label>Cédula de Identidad Arrendatario</label>
-    <input type="text" id="cedula_arrendatario" value="99.999.999-0" />
-
-    <label>Dirección del Inmueble</label>
-    <input type="text" id="direccion_inmueble" value="Calle Ficticia 1, Comuna de Los Ángeles, Región del Biobío" />
-
-    <label>Uso para fines de</label>
-    <input type="text" id="uso" value="Vivienda" />
-
-    <label>Vigencia inicio</label>
-    <input type="text" id="inicio" value="01 - 01 - 2025" />
-
-    <label>Vigencia término</label>
-    <input type="text" id="termino" value="01 - 01 - 2026" />
-
-    <label>Renta mensual</label>
-    <input type="text" id="renta" value="$200.000" />
-
-    <label>Cuenta de depósito</label>
-    <input type="text" id="cuenta" value="Cta RUT, Cuenta Corriente, Cuenta Vista" />
-
-    <label>Banco</label>
-    <input type="text" id="banco" value="Estado" />
-
-    <label>Garantía</label>
-    <input type="text" id="garantia" value="$200.000" />
-
-    <button type="button" id="vista-previa">Vista Previa</button>
-    <button type="button" id="modificar" style="display:none;">Modificar</button>
-    <button type="submit" id="generar" style="display:none;">Generar PDF</button>
+    <input type="text" id="nacionalidad_arrendatario" required />
+    
+    <label>RUT Arrendatario</label>
+    <input type="text" id="rut_arrendatario" required />
+    
+    <label>Dirección Arrendatario</label>
+    <input type="text" id="direccion_arrendatario" required />
+    
+    <button type="submit">Generar PDF</button>
   </form>
 
   <script src="script.js"></script>
